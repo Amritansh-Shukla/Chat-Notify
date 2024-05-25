@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { setAvatarRoute } from "../utils/APIRoutes";
 export default function SetAvatar() {
-  const api = `https://api.multiavatar.com/4645646`;
+  const api = `https://api.multiavatar.com/Binx Bond.png`;
   const navigate = useNavigate();
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,10 +21,14 @@ export default function SetAvatar() {
     theme: "dark",
   };
 
-  useEffect(async () => {
-    if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
-      navigate("/login");
-  }, []);
+  useEffect(() => {
+    const checkLocalStorage = async () => {
+      if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
+        navigate("/login");
+      }
+    };
+    checkLocalStorage();
+  }, [navigate]);
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
@@ -46,31 +50,33 @@ export default function SetAvatar() {
           JSON.stringify(user)
         );
         navigate("/");
+        console.log("hello");
       } else {
         toast.error("Error setting avatar. Please try again.", toastOptions);
       }
     }
   };
 
-  console.log("hello");
 
-  // useEffect(
-  //   function()
-  //   {
-  // async function loadAvatar ()  {
-  //     const data = [];
-  //     for (let i = 0; i < 4; i++) {
-  //       // const image = await axios.get(
-  //       //   `${api}/${Math.round(Math.random() * 1000)}`
-  //       // );
-  //       // const buffer = new Buffer(image.data);
-  //       // data.push(buffer.toString("base64"));
-  //     }
-  //     setAvatars(data);
-  //     setIsLoading(false);
-  //   }
-  //   loadAvatar();
-  // },[]);
+  useEffect(() => {
+    const fetchAvatars = async () => {
+      try {
+        const data = [];
+        for (let i = 0; i < 4; i++) {
+          const response = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
+          const buffer = Buffer.from(response.data);
+          data.push(buffer.toString("base64"));
+        }
+        setAvatars(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching avatars:', error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAvatars();
+  }, []);
 
   console.log("hello55");
 
